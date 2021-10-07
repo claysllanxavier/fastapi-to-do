@@ -1,15 +1,14 @@
-from __future__ import with_statement
-from logging.config import fileConfig
 
 import os, sys
 
+from logging.config import fileConfig
+from typing import List
+
 from dotenv import load_dotenv
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, MetaData
 from sqlalchemy import pool
 
 from alembic import context
-
-
 
 load_dotenv()
 # this is the Alembic Config object, which provides
@@ -24,11 +23,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(base_dir)
-from app.models import * # This helps alembic autogeneration
-from app.database.base import Base
-target_metadata = Base.metadata
+target_metadata = None
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -44,8 +39,17 @@ def get_url():
     db_database = os.getenv("DB_DATABASE", "app")
     return f"{db_connection}://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
 
+def _include_object(target_schema):
+    def include_object(obj, name, object_type, reflected, compare_to):
+        if object_type == "table":
+            return obj.schema in target_schema
+        else:
+            return True
 
-def run_migrations_offline():
+    return include_object
+
+
+def run_migrations_offline(target_metadata, schema):
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -63,14 +67,16 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True
+        include_schemas=True,  #1
+        include_object=_include_object(schema),  #1
+        compare_type=True,
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
 
-def run_migrations_online():
+def run_migrations_online(target_metadata, schema):
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
@@ -87,14 +93,18 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata, compare_type=True
+            connection=connection, 
+            target_metadata=target_metadata,
+            include_schemas=True,  #2
+            include_object=_include_object(schema),  #2
         )
 
         with context.begin_transaction():
             context.run_migrations()
 
 
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    run_migrations_online()
+def run_migrations(metadata: MetaData, schema: List[str]):
+    if context.is_offline_mode():
+        run_migrations_offline(metadata, schema)
+    else:
+        run_migrations_online(metadata, schema)
