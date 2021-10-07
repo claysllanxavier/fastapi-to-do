@@ -4,16 +4,21 @@ from typing import List
 from pydantic import AnyHttpUrl, BaseSettings
 
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = secrets.token_urlsafe(32)
-    SERVER_NAME: str = 'localhost'
-    SERVER_HOST: AnyHttpUrl = 'http://localhost'
-    PROJECT_NAME: str = "To-do"
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = ['http://localhost']
-    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./test.db"
+    app_name: str
+    api_str: str = "/api/v1"
+    app_secret: str
+    app_url: AnyHttpUrl
+    backend_cors_origins: List[AnyHttpUrl] = ['http://localhost']
 
+    db_connection: str
+    db_host: str
+    db_port: int
+    db_database: str
+    db_username: str
+    db_password: str
+    
     class Config:
-        case_sensitive = True
+        env_file = ".env"
 
 
 settings = Settings()

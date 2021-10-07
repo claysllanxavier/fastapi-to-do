@@ -5,7 +5,7 @@ from app.core.config import settings
 
 metadata = MetaData()
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI)
-SessionLocal = sessionmaker(autocommit=True, bind=engine)
+SQLALCHEMY_DATABASE_URI: str = f"{settings.db_connection}://{settings.db_username}:{settings.db_password}@{settings.db_host}:{settings.db_port}/{settings.db_database}"
 
-metadata.create_all(engine)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
