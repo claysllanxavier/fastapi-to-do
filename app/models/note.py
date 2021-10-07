@@ -10,5 +10,5 @@ class Note(Base):
   __tablename__ = "notes"
 
   id = Column(Integer, primary_key=True, index=True)
-  Column("text", String),
-  Column("completed", Boolean),
+  text = Column(String, nullable=False)
+  completed = Column(Boolean, nullable=False)
