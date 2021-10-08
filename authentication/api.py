@@ -2,14 +2,16 @@ from datetime import timedelta
 from typing import Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from pydantic.networks import EmailStr
 
 from core.config import settings
 from core.database import get_db
 from core.security import create_access_token
 
-from authentication import schemas, cruds
+from authentication import schemas, cruds, security
 
 
 router_user = APIRouter(
@@ -128,6 +130,40 @@ def login_access_token(
         ),
         "token_type": "bearer",
     }
+
+@router_auth.get("/profile", response_model=schemas.User)
+def read_user_me(
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(security.get_current_active_user),
+) -> Any:
+    """
+    Get current user.
+    """
+    return current_user
+
+
+@router_auth.put("/profile", response_model=schemas.User)
+def update_user_me(
+    *,
+    db: Session = Depends(get_db),
+    first_name: str = Body(None),
+    last_name: str = Body(None),
+    email: EmailStr = Body(None),
+    current_user: schemas.User = Depends(security.get_current_active_user),
+) -> Any:
+    """
+    Update own user.
+    """
+    current_user_data = jsonable_encoder(current_user)
+    user_in = schemas.UserUpdate(**current_user_data)
+    if first_name is not None:
+        user_in.first_name = first_name
+    if last_name is not None:
+        user_in.last_name = last_name
+    if email is not None:
+        user_in.email = email
+    user = cruds.user.update(db, db_obj=current_user, obj_in=user_in)
+    return user
 
 router = APIRouter()
 router.include_router(router_user)
