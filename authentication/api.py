@@ -1,10 +1,13 @@
+from datetime import timedelta
 from typing import Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from core.config import settings
 from core.database import get_db
+from core.security import create_access_token
 
 from authentication import schemas, cruds
 
@@ -101,5 +104,31 @@ def delete_note(
     return user
 
 
+router_auth = APIRouter()
+
+@router_auth.post("/login", response_model=schemas.UserToken)
+def login_access_token(
+    db: Session = Depends(get_db), 
+    form_data: OAuth2PasswordRequestForm = Depends()
+) -> Any:
+    """
+    OAuth2 compatible token login, get an access token for future requests
+    """
+    user = cruds.user.authenticate(
+        db, email=form_data.username, password=form_data.password
+    )
+    if not user:
+        raise HTTPException(status_code=403, detail="Incorrect email or password")
+    elif not cruds.user.is_active(user):
+        raise HTTPException(status_code=403, detail="Inactive user")
+    return {
+        **user.__dict__,
+        "access_token": create_access_token(
+            user.id
+        ),
+        "token_type": "bearer",
+    }
+
 router = APIRouter()
 router.include_router(router_user)
+router.include_router(router_auth)

@@ -38,3 +38,9 @@ class User(UserInDBBase):
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):
     password: str
+
+
+
+class UserToken(User):
+    access_token: str
+    token_type: str
