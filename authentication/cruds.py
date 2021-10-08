@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from core.security import get_password_hash
 
 from core.cruds import CRUDBase
-from users.models import User
-from users.schemas import UserCreate, UserUpdate
+from authentication.models import User
+from authentication.schemas import UserCreate, UserUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):

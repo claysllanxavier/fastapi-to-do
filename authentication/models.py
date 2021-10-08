@@ -3,8 +3,6 @@ from sqlalchemy.orm import relationship
 
 from core.database import Base
 
-Base = declarative_base()
-
 class User(Base):
     __tablename__ = "users"
 
