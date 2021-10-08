@@ -1,14 +1,29 @@
 import os, sys
 
+folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, folder)
+
 from database.env import run_migrations
 
-from core.database import Base
+from authentication.models import Base
 
-from os.path import abspath, dirname
-sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
-from authentication.models import *
+def combine_metadata():
+    from sqlalchemy import MetaData
+    import authentication.models as models  # models file into which all models are imported
 
-metadata = Base.metadata
+    model_classes = []
+    for model_name in models.__all__:
+        model_classes.append(getattr(models, model_name))
+
+    m = MetaData()
+    for model in model_classes:
+        for t in model.metadata.tables.values():
+            t.tometadata(m)
+
+    return m
+
+metadata = combine_metadata()
 schema = [""]
 
+print(metadata)
 run_migrations(metadata, schema)

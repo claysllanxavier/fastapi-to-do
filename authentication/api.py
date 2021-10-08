@@ -10,7 +10,7 @@ from authentication import schemas, cruds
 
 
 router_user = APIRouter(
-    prefix="/user"
+    prefix="/users"
 )
 
 
@@ -39,7 +39,7 @@ def create_user(
     user = cruds.user.get_by_email(db, email=user_in.email)
     if user:
         raise HTTPException(
-            status_code=400,
+            status_code=403,
             detail="The user with this username already exists in the system.",
         )
     user = cruds.user.create(db, obj_in=user_in)
