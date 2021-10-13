@@ -257,7 +257,98 @@ def delete_note(
 
 
 
+
+
+router_group = APIRouter(
+    prefix="/groups",
+    tags=['groups']
+)
+
+
+@router_group.get("/", response_model=List[schemas.Group])
+def read_groups(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 25
+) -> Any:
+    """
+    Retrieve groups.
+    """
+    groups = cruds.group.get_multi(db, skip=skip, limit=limit)
+    return groups
+
+
+@router_group.post("/", response_model=schemas.Group)
+def create_group(
+    *,
+    db: Session = Depends(get_db),
+    group_in: schemas.GroupCreate
+) -> Any:
+    """
+    Create new group.
+    """
+    group = cruds.group.create(db, obj_in=group_in)
+    return group
+
+
+@router_group.get("/{group_id}", response_model=schemas.Group)
+def read_group_by_id(
+    group_id: int,
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    Get a specific group by id.
+    """
+    group = cruds.group.get(db, id=group_id)
+    if not group:
+      raise HTTPException(
+          status_code=404,
+          detail="The group does not exist in the system",
+      )
+    return group
+
+
+@router_group.put("/{group_id}", response_model=schemas.Group)
+def update_group(
+    *,
+    db: Session = Depends(get_db),
+    group_id: int,
+    group_in: schemas.GroupUpdate
+) -> Any:
+    """
+    Update a group.
+    """
+    group = cruds.group.get(db, id=group_id)
+    if not group:
+        raise HTTPException(
+            status_code=404,
+            detail="The group does not exist in the system",
+        )
+    group = cruds.group.update(db, db_obj=group, obj_in=group_in)
+    return group
+
+@router_group.delete("/{id}", response_model=schemas.Group)
+def delete_note(
+    *,
+    db: Session = Depends(get_db),
+    id: int
+) -> Any:
+    """
+    Delete an note.
+    """
+    group = cruds.group.get(db=db, id=id)
+    if not group:
+      raise HTTPException(
+        status_code=404,
+        detail="The group does not exist in the system",
+      )
+    group = cruds.group.remove(db=db, id=id)
+    return group
+
+
+
 router = APIRouter()
 router.include_router(router_user)
 router.include_router(router_auth)
 router.include_router(router_permission)
+router.include_router(router_group)

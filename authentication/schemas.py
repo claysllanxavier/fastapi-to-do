@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Set
 
 from pydantic import BaseModel, EmailStr
 
@@ -75,6 +75,33 @@ class Permission(PermissionInDBBase):
 
 
 # Additional properties stored in DB
-class PermisionInDB(PermissionInDBBase):
+class PermissionInDB(PermissionInDBBase):
+    pass
+
+
+# Groups
+class GroupBase(BaseModel):
+  name: str
+
+class GroupCreate(GroupBase):
+    permissions: Set[str] = []
+
+class GroupUpdate(GroupBase):
+    permissions: Set[str] = []
+
+class GroupInDBBase(GroupBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# Additional properties to return via API
+class Group(GroupInDBBase):
+    pass
+
+
+# Additional properties stored in DB
+class GroupInDB(GroupInDBBase):
     pass
 

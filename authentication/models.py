@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String, Table, ForeignKey
+from sqlalchemy.orm import relationship
 
 from core.database import Base
 
@@ -21,3 +22,21 @@ class Permission(Base):
     id = Column(Integer, primary_key=True, index=True)
     app = Column(String, nullable=False)
     name = Column(String, nullable=False)
+
+
+group_permission = Table('group_permission', Base.metadata,
+    Column('group_id', ForeignKey('groups.id'), primary_key=True),
+    Column('permission_id', ForeignKey('permissions.id'), primary_key=True)
+)
+
+class Group(Base):
+    __tablename__ = "groups"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    permissions = relationship(
+        "Permission",
+        secondary=group_permission,
+    )
+
+
