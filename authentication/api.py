@@ -166,6 +166,98 @@ def update_user_me(
     user = cruds.user.update(db, db_obj=current_user, obj_in=user_in)
     return user
 
+
+
+
+router_permission = APIRouter(
+    prefix="/permisions",
+    tags=['permisions']
+)
+
+
+@router_permission.get("/", response_model=List[schemas.Permission])
+def read_permissions(
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 25
+) -> Any:
+    """
+    Retrieve permissions.
+    """
+    permissions = cruds.permission.get_multi(db, skip=skip, limit=limit)
+    return permissions
+
+
+@router_permission.post("/", response_model=schemas.Permission)
+def create_permission(
+    *,
+    db: Session = Depends(get_db),
+    permission_in: schemas.PermissionCreate
+) -> Any:
+    """
+    Create new permission.
+    """
+    permission = cruds.permission.create(db, obj_in=permission_in)
+    return permission
+
+
+@router_permission.get("/{permission_id}", response_model=schemas.Permission)
+def read_permission_by_id(
+    permission_id: int,
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    Get a specific permission by id.
+    """
+    permission = cruds.permission.get(db, id=permission_id)
+    if not permission:
+      raise HTTPException(
+          status_code=404,
+          detail="The permission does not exist in the system",
+      )
+    return permission
+
+
+@router_permission.put("/{permission_id}", response_model=schemas.Permission)
+def update_permission(
+    *,
+    db: Session = Depends(get_db),
+    permission_id: int,
+    permission_in: schemas.PermissionUpdate
+) -> Any:
+    """
+    Update a permission.
+    """
+    permission = cruds.permission.get(db, id=permission_id)
+    if not permission:
+        raise HTTPException(
+            status_code=404,
+            detail="The permission does not exist in the system",
+        )
+    permission = cruds.permission.update(db, db_obj=permission, obj_in=permission_in)
+    return permission
+
+@router_permission.delete("/{id}", response_model=schemas.Permission)
+def delete_note(
+    *,
+    db: Session = Depends(get_db),
+    id: int
+) -> Any:
+    """
+    Delete an note.
+    """
+    permission = cruds.permission.get(db=db, id=id)
+    if not permission:
+      raise HTTPException(
+        status_code=404,
+        detail="The permission does not exist in the system",
+      )
+    permission = cruds.permission.remove(db=db, id=id)
+    return permission
+
+
+
 router = APIRouter()
 router.include_router(router_user)
 router.include_router(router_auth)
+router.include_router(router_permission)

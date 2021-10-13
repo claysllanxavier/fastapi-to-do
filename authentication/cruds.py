@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from core.security import get_password_hash, verify_password
 
 from core.cruds import CRUDBase
-from authentication.models import User
-from authentication.schemas import UserCreate, UserUpdate
+from authentication.models import User, Permission
+from authentication.schemas import UserCreate, UserUpdate, PermissionCreate, PermissionUpdate
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -55,3 +55,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
 
 user = CRUDUser(User)
+
+class CRUDPermission(CRUDBase[Permission, PermissionCreate, PermissionUpdate]):
+    pass
+
+permission = CRUDPermission(Permission)

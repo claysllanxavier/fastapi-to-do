@@ -10,7 +10,7 @@ class UserBase(BaseModel):
   is_superuser: bool = False
   first_name: Optional[str] = None
   last_name: Optional[str] = None
-  username: Optional[str] = None
+  username: str
 
 
 # Properties to receive via API on creation
@@ -48,3 +48,33 @@ class UserToken(User):
 
 class TokenPayload(BaseModel):
     sub: Optional[int] = None
+
+
+
+# Permisions
+class PermissionBase(BaseModel):
+  app: str
+  name: str
+
+class PermissionCreate(PermissionBase):
+    pass
+
+class PermissionUpdate(PermissionBase):
+    pass
+
+class PermissionInDBBase(PermissionBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+# Additional properties to return via API
+class Permission(PermissionInDBBase):
+    pass
+
+
+# Additional properties stored in DB
+class PermisionInDB(PermissionInDBBase):
+    pass
+
