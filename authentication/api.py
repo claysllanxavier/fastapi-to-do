@@ -1,4 +1,3 @@
-from datetime import timedelta
 from typing import Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
@@ -7,7 +6,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic.networks import EmailStr
 
-from core.config import settings
 from core.database import get_db
 from core.security import create_access_token
 
@@ -15,11 +13,12 @@ from authentication import schemas, cruds, security
 
 
 router_user = APIRouter(
-    prefix="/users"
+    prefix="/users",
+    tags=['users']
 )
 
 
-@router_user.get("/", response_model=List[schemas.User], tags=["user"])
+@router_user.get("/", response_model=List[schemas.User])
 def read_users(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -32,7 +31,7 @@ def read_users(
     return users
 
 
-@router_user.post("/", response_model=schemas.User, tags=["user"])
+@router_user.post("/", response_model=schemas.User)
 def create_user(
     *,
     db: Session = Depends(get_db),
@@ -51,7 +50,7 @@ def create_user(
     return user
 
 
-@router_user.get("/{user_id}", response_model=schemas.User, tags=["user"])
+@router_user.get("/{user_id}", response_model=schemas.User)
 def read_user_by_id(
     user_id: int,
     db: Session = Depends(get_db),
@@ -68,7 +67,7 @@ def read_user_by_id(
     return user
 
 
-@router_user.put("/{user_id}", response_model=schemas.User, tags=["user"])
+@router_user.put("/{user_id}", response_model=schemas.User)
 def update_user(
     *,
     db: Session = Depends(get_db),
@@ -87,7 +86,7 @@ def update_user(
     user = cruds.user.update(db, db_obj=user, obj_in=user_in)
     return user
 
-@router_user.delete("/{id}", response_model=schemas.User, tags=["user"])
+@router_user.delete("/{id}", response_model=schemas.User)
 def delete_note(
     *,
     db: Session = Depends(get_db),
@@ -106,7 +105,9 @@ def delete_note(
     return user
 
 
-router_auth = APIRouter()
+router_auth = APIRouter(
+     tags=['auth']
+)
 
 @router_auth.post("/login", response_model=schemas.UserToken)
 def login_access_token(
