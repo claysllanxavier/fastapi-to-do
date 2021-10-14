@@ -16,11 +16,13 @@ class UserBase(BaseModel):
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str
+    groups: Optional[Set[int]] = []
 
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
     password: Optional[str] = None
+    groups: Optional[Set[int]] = []
 
 
 class UserInDBBase(UserBase):
@@ -84,10 +86,10 @@ class GroupBase(BaseModel):
   name: str
 
 class GroupCreate(GroupBase):
-    permissions: Set[str] = []
+    permissions: Set[int] = []
 
 class GroupUpdate(GroupBase):
-    permissions: Set[str] = []
+    permissions: Set[int] = []
 
 class GroupInDBBase(GroupBase):
     id: int

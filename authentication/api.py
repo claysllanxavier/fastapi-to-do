@@ -62,7 +62,7 @@ def read_user_by_id(
     if not user:
       raise HTTPException(
           status_code=404,
-          detail="The user with this username does not exist in the system",
+          detail="The user with this id does not exist in the system",
       )
     return user
 
@@ -81,7 +81,7 @@ def update_user(
     if not user:
         raise HTTPException(
             status_code=404,
-            detail="The user with this username does not exist in the system",
+            detail="The user with this id does not exist in the system",
         )
     user = cruds.user.update(db, db_obj=user, obj_in=user_in)
     return user
@@ -99,7 +99,7 @@ def delete_note(
     if not user:
       raise HTTPException(
         status_code=404,
-        detail="The user with this username does not exist in the system",
+        detail="The user with this id does not exist in the system",
       )
     user = cruds.user.remove(db=db, id=id)
     return user
