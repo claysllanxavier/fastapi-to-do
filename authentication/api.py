@@ -18,7 +18,7 @@ router_user = APIRouter(
 )
 
 
-@router_user.get("/", response_model=List[schemas.User])
+@router_user.get("/", response_model=List[schemas.User], dependencies=[Depends(security.get_current_active_user)])
 def read_users(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -50,10 +50,10 @@ def create_user(
     return user
 
 
-@router_user.get("/{user_id}", response_model=schemas.User)
+@router_user.get("/{user_id}", response_model=schemas.User, dependencies=[Depends(security.get_current_active_user)])
 def read_user_by_id(
     user_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Get a specific user by id.
@@ -67,7 +67,7 @@ def read_user_by_id(
     return user
 
 
-@router_user.put("/{user_id}", response_model=schemas.User)
+@router_user.put("/{user_id}", response_model=schemas.User, dependencies=[Depends(security.get_current_active_user)])
 def update_user(
     *,
     db: Session = Depends(get_db),
@@ -86,7 +86,7 @@ def update_user(
     user = cruds.user.update(db, db_obj=user, obj_in=user_in)
     return user
 
-@router_user.delete("/{id}", response_model=schemas.User)
+@router_user.delete("/{id}", response_model=schemas.User, dependencies=[Depends(security.get_current_active_user)])
 def delete_note(
     *,
     db: Session = Depends(get_db),
@@ -134,7 +134,6 @@ def login_access_token(
 
 @router_auth.get("/profile", response_model=schemas.User)
 def read_user_me(
-    db: Session = Depends(get_db),
     current_user: schemas.User = Depends(security.get_current_active_user),
 ) -> Any:
     """
@@ -171,7 +170,8 @@ def update_user_me(
 
 router_permission = APIRouter(
     prefix="/permisions",
-    tags=['permisions']
+    tags=['permisions'],
+    dependencies=[Depends(security.get_current_active_user)]
 )
 
 
@@ -179,7 +179,8 @@ router_permission = APIRouter(
 def read_permissions(
     db: Session = Depends(get_db),
     skip: int = 0,
-    limit: int = 25
+    limit: int = 25,
+    has_permission: bool = Depends(security.check_has_permission)
 ) -> Any:
     """
     Retrieve permissions.
@@ -204,7 +205,7 @@ def create_permission(
 @router_permission.get("/{permission_id}", response_model=schemas.Permission)
 def read_permission_by_id(
     permission_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Get a specific permission by id.
@@ -238,7 +239,7 @@ def update_permission(
     return permission
 
 @router_permission.delete("/{id}", response_model=schemas.Permission)
-def delete_note(
+def delete_permission(
     *,
     db: Session = Depends(get_db),
     id: int
@@ -261,7 +262,8 @@ def delete_note(
 
 router_group = APIRouter(
     prefix="/groups",
-    tags=['groups']
+    tags=['groups'],
+    dependencies=[Depends(security.get_current_active_user)]
 )
 
 
@@ -294,7 +296,7 @@ def create_group(
 @router_group.get("/{group_id}", response_model=schemas.Group)
 def read_group_by_id(
     group_id: int,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ) -> Any:
     """
     Get a specific group by id.
