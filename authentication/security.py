@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+from starlette.requests import Request
 
 from core.config import settings
 from core.database import get_db
@@ -13,7 +14,7 @@ from core import security
 from authentication import cruds, schemas, models
 
 reusable_oauth2 = OAuth2PasswordBearer(
-  tokenUrl=f"{settings.api_str}/login/access-token"
+  tokenUrl=f"{settings.api_str}/authentication/login"
 )
 
 def get_current_user(
@@ -51,3 +52,19 @@ def get_current_active_superuser(
             status_code=403, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+
+
+def has_permission(permission_name: str) -> bool:
+    def has_permission_(db: Session = Depends(get_db)):
+        permission = (
+            db.query(models.Permission.id).join(models.Group, models.User.groups)
+                .join(models.Permission, models.Group.permissions)
+                .filter(models.Permission.name == permission_name)
+                .first()
+        )
+        if not permission:
+            raise HTTPException(status_code=403, detail="You don't have permission")
+        return True
+    return has_permission_
+

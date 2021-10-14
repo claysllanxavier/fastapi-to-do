@@ -175,12 +175,15 @@ router_permission = APIRouter(
 )
 
 
-@router_permission.get("/", response_model=List[schemas.Permission])
+@router_permission.get(
+    "/", 
+    response_model=List[schemas.Permission], 
+    dependencies=[Depends(security.has_permission("authentication.permission_view"))]
+)
 def read_permissions(
     db: Session = Depends(get_db),
     skip: int = 0,
-    limit: int = 25,
-    has_permission: bool = Depends(security.check_has_permission)
+    limit: int = 25
 ) -> Any:
     """
     Retrieve permissions.

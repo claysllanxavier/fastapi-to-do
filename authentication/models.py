@@ -7,7 +7,6 @@ class Permission(Base):
     __tablename__ = "permissions"
 
     id = Column(Integer, primary_key=True, index=True)
-    app = Column(String, nullable=False)
     name = Column(String, nullable=False)
 
 

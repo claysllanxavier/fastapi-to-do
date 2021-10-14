@@ -55,7 +55,6 @@ class TokenPayload(BaseModel):
 
 # Permisions
 class PermissionBase(BaseModel):
-  app: str
   name: str
 
 class PermissionCreate(PermissionBase):
