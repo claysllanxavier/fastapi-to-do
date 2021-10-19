@@ -9,6 +9,12 @@ from sqlalchemy import pool
 
 from alembic import context
 
+'''
+Arquivo com a configuração das migrations 
+
+- Deve-se importar os models das app que você deseja realizar as migrations
+'''
+
 load_dotenv()
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

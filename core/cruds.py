@@ -11,6 +11,13 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
+'''
+Arquivos com com crud padrão para um models
+
+- Herdando essa classe, já e possível ter o crud funcionando normalmente
+- O desenvolvedor pode customizar ou criar novos métodos herdando dessa classe
+'''
+
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         """

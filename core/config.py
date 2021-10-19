@@ -3,6 +3,13 @@ from typing import List
 
 from pydantic import AnyHttpUrl, BaseSettings
 
+'''
+Arquivos principal de configuração da app
+
+- Nesse aquivo podem ser incluidas novos atributos que serão lidos pelo arquivo .env
+- APP_NAME no .env se traduz para app_name dentro da aplicação
+'''
+
 class Settings(BaseSettings):
     app_name: str
     api_str: str = "/api/v1"

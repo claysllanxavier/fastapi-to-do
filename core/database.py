@@ -6,6 +6,13 @@ from sqlalchemy.ext.declarative import as_declarative, declared_attr
 
 from .config import settings
 
+'''
+Arquivo responsável pelo banco de dados
+
+- Model principal que será herdado pelos outros models de outras app
+- Cria uma instância do banco e finaliza ao finalizar a transação
+'''
+
 @as_declarative()
 class Base:
     id: Any

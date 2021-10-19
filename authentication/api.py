@@ -11,6 +11,14 @@ from core.security import create_access_token
 
 from authentication import schemas, cruds, security
 
+'''
+Arquivos com os endpoints da app
+
+- Crud completo de usuários, grupos e permissões
+- Login
+- Atualização de perfil
+- Validação de endpoints com usuário logado ou permissões
+'''
 
 router_user = APIRouter(
     prefix="/users",

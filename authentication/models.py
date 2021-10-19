@@ -3,6 +3,12 @@ from sqlalchemy.orm import relationship
 
 from core.database import Base
 
+'''
+Arquivo com os  models da app de autenticação
+
+- É configurado o nome da tabela, colunas e relacionamentos
+'''
+
 class Permission(Base):
     __tablename__ = "permissions"
 

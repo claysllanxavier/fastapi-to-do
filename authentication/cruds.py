@@ -9,6 +9,11 @@ from authentication.models import User, Permission, Group
 from authentication.schemas import UserCreate, UserUpdate, PermissionCreate, PermissionUpdate, GroupCreate, GroupUpdate
 
 
+'''
+Arquivo com os cruds de usuário, permissões e grupos
+
+- Cruds herdando do crud base
+'''
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
             return db.query(User).filter(User.email == email).first()

@@ -13,6 +13,12 @@ from core import security
 
 from authentication import cruds, schemas, models
 
+'''
+Arquivo com os middlewares de segurança da app
+
+- Neste aquivo e possível obeter o usuário logado de acordo com o token jwt
+'''
+
 reusable_oauth2 = OAuth2PasswordBearer(
   tokenUrl=f"{settings.api_str}/authentication/login"
 )

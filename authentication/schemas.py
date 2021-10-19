@@ -2,6 +2,11 @@ from typing import Optional, Set
 
 from pydantic import BaseModel, EmailStr
 
+'''
+Arquivo com os schemas da app
+
+- Nesse arquivo e possível configurar o schemas de entrada e saída de dados da api
+'''
 
 # Shared properties
 class UserBase(BaseModel):
